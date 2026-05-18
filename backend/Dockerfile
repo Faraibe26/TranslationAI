@@ -1,20 +1,23 @@
 # Use official Python runtime as a parent image
 FROM python:3.11-slim
 
-# Set working directory in container
-WORKDIR /app/backend
+# Set working directory
+WORKDIR /app
 
-# Copy requirements from parent directory
+# Copy requirements
 COPY requirements.txt .
 
-# Install Python dependencies
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend code
+# Copy application code
 COPY . .
 
-# Expose port 8000
+# Expose port
 EXPOSE 8000
+
+# Set environment variables
+ENV PORT=8000
 
 # Run the application
 CMD ["python", "main.py"]
