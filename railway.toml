@@ -4,3 +4,4 @@ dockerfilePath = "backend/Dockerfile"
 
 [deploy]
 port = 8000
+healthcheckPath = "/"

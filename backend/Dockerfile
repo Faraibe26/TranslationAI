@@ -18,6 +18,7 @@ EXPOSE 8000
 
 # Set environment variables
 ENV PORT=8000
+ENV HOST=0.0.0.0
 
-# Run the application
-CMD ["python", "main.py"]
+# Run the application using the startup script
+CMD ["python", "start.py"]
