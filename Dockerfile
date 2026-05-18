@@ -4,20 +4,18 @@ FROM python:3.11-slim
 # Set working directory in container
 WORKDIR /app
 
-# Copy requirements
-COPY backend/requirements.txt .
+# Copy the entire project
+COPY . .
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy backend code
-COPY backend/ ./backend/
-
-# Set working directory to backend
+# Change to backend directory and install requirements
 WORKDIR /app/backend
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose port 8000
 EXPOSE 8000
+
+# Set environment variables
+ENV PORT=8000
 
 # Run the application
 CMD ["python", "main.py"]
