@@ -2,19 +2,21 @@
 
 ## 🚀 Recent Fixes Applied
 
-### Backend Deployment Fixes
+### Backend Deployment Fixes (CRITICAL)
 1. ✅ **Removed conflicting root Dockerfile** - Was causing deployment conflicts
-2. ✅ **Fixed Procfile** - Changed from `python main.py` to `python start.py` (uvicorn wrapper)
-3. ✅ **Fixed start.py shebang** - Changed from `#!/bin/bash` to `#!/usr/bin/env python3`
-4. ✅ **Updated CORS configuration** - Added Vercel deployment URL and regex pattern
-5. ✅ **Verified health check endpoint** - Root `/` endpoint returns status
-6. ✅ **Deleted legacy railway.json** - Removed conflicting configuration
+2. ✅ **Fixed start.py shebang** - Changed from `#!/bin/bash` to `#!/usr/bin/env python3`
+3. ✅ **Updated CORS configuration** - Simplified and added Vercel deployment URL
+4. ✅ **Verified health check endpoint** - Root `/` endpoint returns status
+5. ✅ **Deleted legacy railway.json** - Removed conflicting configuration
+6. ✅ **Fixed Dockerfile CMD** - Now uses `uvicorn main:app` directly (was incorrectly using `python main.py`)
+7. ✅ **Tested locally** - Backend runs perfectly on localhost:8000
 
 ### Configuration Files
-- `backend/Dockerfile` - Properly configured to use start.py
+- `backend/Dockerfile` - **FIXED**: Uses uvicorn directly in CMD
 - `railway.toml` - Points to backend/Dockerfile with health check
 - `Procfile` - Uses start.py for local/Heroku deployment
 - `vercel.json` - SPA rewrites configured for frontend
+- `backend/requirements.txt` - All dependencies specified
 
 ## 📋 Deployment Checklist
 
@@ -29,13 +31,12 @@
 - [x] Deployed to Vercel: https://translation-ai-phi.vercel.app
 - [x] Environment variable setup for API URL
 
-### ⏳ Backend (Railway) - Needs Verification
+### ⏳ Backend (Railway) - CRITICAL FIX APPLIED
 - [x] FastAPI with CORS enabled
 - [x] Translation endpoints ready
-- [x] Docker configuration correct
-- [x] Start script fixed
+- [x] **Docker configuration FIXED** - Now uses uvicorn directly
 - [x] Requirements.txt updated
-- [ ] **Waiting for Railway to rebuild and deploy**
+- [ ] **Waiting for Railway to rebuild and deploy** (PUSH TRIGGERED NEW BUILD)
 - [ ] Health check `/` responding
 - [ ] Translation endpoint `/api/translate` working
 
@@ -106,15 +107,72 @@ python3 start.py
 - Health check: `/` (returns JSON status)
 
 ## 📄 Key Files Modified Today
+- `backend/Dockerfile` - **CRITICAL FIX**: Changed CMD to use uvicorn directly
 - `backend/main.py` - Updated CORS origins
-- `backend/start.py` - Fixed shebang line
-- `Procfile` - Now uses start.py
+- `Procfile` - For Heroku/local fallback (Railway uses Docker)
 - Deleted: Root `Dockerfile`
 - Deleted: `backend/railway.json`
 
 ## 🎯 Current Status
-- Frontend: ✅ Deployed and working
-- Backend: ⏳ Waiting for Railway rebuild
+- Frontend: ✅ Deployed and working at https://translation-ai-phi.vercel.app
+- Backend: ⏳ **NEW BUILD TRIGGERED** - Waiting for Railway to rebuild with uvicorn fix
 - Integration: ⏳ Pending backend deployment
 
+## ✅ VERIFICATION CHECKLIST
+
+### Once Railway Rebuild Completes:
+
+**1. Test Health Check**
+```bash
+curl https://your-railway-backend-url/
+# Should return: {"message":"Pharmacy Translation API is running","status":"healthy"}
+```
+
+**2. Test Translation Endpoint**
+```bash
+curl -X POST https://your-railway-backend-url/api/translate \
+  -H "Content-Type: application/json" \
+  -d '{"text":"Hello, how are you?","target_language":"es"}'
+# Should return translated text
+```
+
+**3. Test CORS Headers**
+```bash
+curl -i -X OPTIONS https://your-railway-backend-url/api/translate \
+  -H "Origin: https://translation-ai-phi.vercel.app" \
+  -H "Access-Control-Request-Method: POST"
+# Should see 200 OK with CORS headers
+```
+
+**4. Set Vercel Environment Variable**
+- Go to: https://vercel.com/dashboard
+- Project: `translation-ai-phi`
+- Settings → Environment Variables
+- Add: `VITE_API_URL=https://your-railway-backend-url`
+- Redeploy the project
+
+**5. Test End-to-End in Browser**
+- Visit: https://translation-ai-phi.vercel.app
+- Open DevTools Console (F12)
+- Select Spanish language
+- Enter: "Hello"
+- Click "Translate"
+- Should see translation appear (no CORS errors in console)
+
+## 🔍 LOCAL TESTING (to verify everything works)
+
+The backend IS working locally. To test:
+```bash
+cd /Users/faraibekhan/TranslationAI/backend
+python3 -m pip install -r requirements.txt  # Already done
+python3 start.py                            # Runs on http://localhost:8000
+
+# In another terminal:
+curl http://localhost:8000/
+curl -X POST http://localhost:8000/api/translate \
+  -H "Content-Type: application/json" \
+  -d '{"text":"Hello","target_language":"es"}'
+```
+
 All code is committed and pushed to GitHub. Monitor Railway dashboard for deployment progress.
+```
