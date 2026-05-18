@@ -23,12 +23,12 @@ app.add_middleware(
         "http://localhost:3000",
         "http://localhost:5173",
         "127.0.0.1:5173",
-        "https://translation-ai-phi.vercel.app",  # Vercel deployment
+        "https://translation-ai-phi.vercel.app",
+        "https://*.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    allow_origin_regex="(http|https)://.*",  # Allow all origins in dev, restrict in prod
 )
 
 # ============ Pydantic Models ============
