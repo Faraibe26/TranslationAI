@@ -21,4 +21,4 @@ ENV PORT=8000
 ENV HOST=0.0.0.0
 
 # Run the application using the startup script
-CMD ["python", "start.py"]
+CMD ["python", "main.py"]
