@@ -2,7 +2,7 @@
 FROM python:3.11-slim
 
 # Set working directory in container
-WORKDIR /app/backend
+WORKDIR /app
 
 # Copy requirements from parent directory
 COPY requirements.txt .
