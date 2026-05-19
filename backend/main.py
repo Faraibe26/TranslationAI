@@ -11,6 +11,7 @@ import httpx
 
 
 # Initialize FastAPI app
+app = FastAPI(title="PharmaLingo - Pharmacy Translation API", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
