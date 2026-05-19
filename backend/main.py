@@ -9,8 +9,6 @@ import os
 from dotenv import load_dotenv
 import httpx
 
-# Load environment variables from .env file
-load_dotenv()
 
 # Initialize FastAPI app
 app = FastAPI(title="PharmaLingo - Pharmacy Translation API", version="1.0.0")
@@ -25,8 +23,8 @@ app.add_middleware(
 )
 
 
-
-
+# Load environment variables from .env file
+load_dotenv()
 
 
 # Enable CORS (Cross-Origin Resource Sharing) for frontend communication
