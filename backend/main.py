@@ -139,6 +139,11 @@ def read_root():
     """Health check endpoint"""
     return {"message": "Pharmacy Translation API is running", "status": "healthy"}
 
+@app.get("/health")
+def health_check():
+    """Explicit health check endpoint for Railway"""
+    return {"status": "ok", "service": "pharmacy-translation-api"}
+
 @app.post("/api/translate", response_model=TranslationResponse)
 async def translate(request: TranslationRequest):
     """
