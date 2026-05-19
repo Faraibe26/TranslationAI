@@ -17,9 +17,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "https://translation-ai-self.vercel.app",
-        "https://translation-7iqcx6z9q-faraibe26s-projects.vercel.app",
     ],
-    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
