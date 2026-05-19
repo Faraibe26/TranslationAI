@@ -4,7 +4,6 @@ This backend provides translation services for pharmacy staff
 """
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
 from dotenv import load_dotenv
@@ -15,10 +14,6 @@ load_dotenv()
 
 # Initialize FastAPI app
 app = FastAPI(title="PharmaLingo - Pharmacy Translation API", version="1.0.0")
-
-
-app = FastAPI(...)
-
 
 
 app.add_middleware(
