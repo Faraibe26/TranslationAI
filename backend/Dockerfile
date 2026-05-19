@@ -17,8 +17,7 @@ COPY . .
 EXPOSE 8000
 
 # Set environment variables
-ENV PORT=8000
 ENV HOST=0.0.0.0
 
 # Run the application with uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
