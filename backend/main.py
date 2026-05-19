@@ -17,6 +17,10 @@ load_dotenv()
 app = FastAPI(title="PharmaLingo - Pharmacy Translation API", version="1.0.0")
 
 
+app = FastAPI(...)
+
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -24,7 +28,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app = FastAPI(...)
+
 
 
 
