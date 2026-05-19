@@ -6,9 +6,7 @@ WORKDIR /app
 
 # Set environment variables BEFORE copying anything
 ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    HOST=0.0.0.0 \
-    PORT=8000
+    PYTHONDONTWRITEBYTECODE=1
 
 # Copy requirements
 COPY requirements.txt .
@@ -19,12 +17,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
-# Copy and make entrypoint script executable
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
-
 # Expose port
 EXPOSE 8000
 
-# Run the application with entrypoint script
-ENTRYPOINT ["/app/entrypoint.sh"]
+# Run the application with uvicorn
+# Render sets PORT env var, we default to 8000 for local testing
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]

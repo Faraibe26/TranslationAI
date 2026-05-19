@@ -2,7 +2,7 @@
 Pharmacy Translation Assistant - FastAPI Backend
 This backend provides translation services for pharmacy staff
 """
-
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -15,6 +15,22 @@ load_dotenv()
 
 # Initialize FastAPI app
 app = FastAPI(title="PharmaLingo - Pharmacy Translation API", version="1.0.0")
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "https://translation-ai-self.vercel.app"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+
+
 
 # Enable CORS (Cross-Origin Resource Sharing) for frontend communication
 app.add_middleware(
