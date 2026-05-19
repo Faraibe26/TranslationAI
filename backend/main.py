@@ -11,16 +11,20 @@ import httpx
 
 
 # Initialize FastAPI app
-app = FastAPI(title="PharmaLingo - Pharmacy Translation API", version="1.0.0")
-
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "https://translation-ai-phi.vercel.app",
+        "https://translation-7iqcx6z9q-faraibe26s-projects.vercel.app",
+    ],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 
 # Load environment variables from .env file
@@ -28,19 +32,6 @@ load_dotenv()
 
 
 # Enable CORS (Cross-Origin Resource Sharing) for frontend communication
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "127.0.0.1:5173",
-        "https://translation-ai-phi.vercel.app",
-        "https://*.vercel.app",
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # ============ Pydantic Models ============
 
