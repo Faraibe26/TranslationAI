@@ -21,4 +21,5 @@ ENV HOST=0.0.0.0
 ENV PORT=8000
 
 # Run the application with uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Use --log-level info to see startup messages
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--log-level", "info"]
