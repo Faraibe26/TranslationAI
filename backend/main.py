@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import os
+import re
 from dotenv import load_dotenv
 import httpx
 
@@ -77,23 +78,69 @@ def normalize_language_code(language_code: str) -> str:
 
 
 def detect_supported_target(text: str) -> str:
-    """Fallback heuristic for demo phrases when the service is unavailable."""
+    """Guess the source language using scripts, accents, and common words."""
     lower_text = text.lower().strip()
-    if any(character.isdigit() for character in lower_text):
-        # Keep digits from steering detection.
-        lower_text = "".join(character for character in lower_text if not character.isdigit())
-    if any(character in lower_text for character in ["¿", "¡", "ñ", "á", "é", "í", "ó", "ú"]):
-        return "es"
-    if any(character in lower_text for character in ["à", "â", "ç", "é", "è", "ê", "ë", "î", "ï", "ô", "ù", "û", "ü"]):
-        return "fr"
-    if any(character in lower_text for character in ["ä", "ö", "ü", "ß"]):
-        return "de"
-    if any(character in lower_text for character in ["à", "è", "é", "ì", "í", "î", "ò", "ó", "ù"]):
-        return "pt"
+    cleaned_text = re.sub(r"\d+", " ", lower_text)
+    tokens = re.findall(r"[\w'áéíóúüñàâçèêëîïôùûäößãõ]+", cleaned_text, flags=re.UNICODE)
+
     if any("\u0600" <= character <= "\u06ff" for character in lower_text):
         return "ar"
     if any("\u4e00" <= character <= "\u9fff" for character in lower_text):
         return "zh"
+    if any("\uac00" <= character <= "\ud7af" for character in lower_text):
+        return "ko"
+    if any(character in lower_text for character in ["¿", "¡", "ñ", "á", "é", "í", "ó", "ú"]):
+        return "es"
+    if any(character in lower_text for character in ["à", "â", "ç", "è", "ê", "ë", "î", "ï", "ô", "ù", "û"]):
+        return "fr"
+    if any(character in lower_text for character in ["ä", "ö", "ß"]):
+        return "de"
+    if any(character in lower_text for character in ["ã", "õ", "ç", "á", "é", "í", "ó", "ú"]):
+        return "pt"
+
+    language_tokens = {
+        "es": {
+            "el", "la", "los", "las", "de", "del", "que", "y", "en", "no", "por", "para",
+            "con", "una", "un", "es", "estoy", "está", "tiene", "tengo", "como", "cuanto",
+            "cuántos", "cuántas", "porfavor", "favor", "alergia", "medicamento", "tomar",
+        },
+        "fr": {
+            "le", "la", "les", "des", "de", "du", "que", "et", "est", "pas", "pour",
+            "avec", "une", "un", "vous", "avez", "bonjour", "merci", "médicament",
+        },
+        "de": {
+            "der", "die", "das", "und", "nicht", "ist", "ein", "eine", "mit", "sie", "haben",
+            "für", "bitte", "medikament", "allergie",
+        },
+        "pt": {
+            "o", "a", "os", "as", "de", "do", "da", "que", "e", "não", "para", "com",
+            "uma", "um", "você", "por", "favor", "remédio", "alergia",
+        },
+        "vi": {
+            "ban", "co", "khong", "có", "không", "thuoc", "thuốc", "vui", "lòng", "xin",
+        },
+        "en": {
+            "the", "and", "is", "are", "you", "your", "please", "take", "how", "many", "any",
+            "with", "from", "this", "that", "do", "does", "have", "medication", "allergies",
+        },
+    }
+
+    scores = {language_code: 0 for language_code in language_tokens}
+    for token in tokens:
+        for language_code, token_set in language_tokens.items():
+            if token in token_set:
+                scores[language_code] += 1
+
+    best_language = max(scores, key=scores.get)
+    if scores[best_language] > 0:
+        return best_language
+
+    # Default to English only when the text looks like plain ASCII prose.
+    ascii_letters = sum(1 for character in lower_text if character.isascii() and character.isalpha())
+    non_ascii_letters = sum(1 for character in lower_text if not character.isascii() and character.isalpha())
+    if ascii_letters > non_ascii_letters:
+        return "en"
+
     return "en"
 
 
