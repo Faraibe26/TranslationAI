@@ -148,6 +148,30 @@ def guess_source_language(text: str) -> str:
     """Guess the source language when the UI leaves it on auto-detect."""
     return detect_supported_target(text)
 
+
+def candidate_source_languages(text: str, requested_source: str, target_language: str) -> list[str]:
+    """Return source-language candidates ordered from most likely to least likely."""
+    candidates = []
+
+    if requested_source and requested_source != "auto":
+        candidates.append(requested_source)
+    else:
+        guessed_source = guess_source_language(text)
+        if guessed_source != "auto":
+            candidates.append(guessed_source)
+
+        for language_code in ["es", "fr", "de", "pt", "vi", "ko", "ar", "zh", "en"]:
+            if language_code not in candidates:
+                candidates.append(language_code)
+
+    # Prefer the real target if it is not English, but keep English last so
+    # auto-detect + English requests still have a chance to succeed first.
+    if target_language == "en" and "en" in candidates:
+        candidates.remove("en")
+        candidates.append("en")
+
+    return candidates
+
 def mock_translate(text: str, source_language: str, target_language: str) -> str:
     """
     Mock translation function for demo purposes.
@@ -300,30 +324,40 @@ async def translate(request: TranslationRequest):
 
     source_language = normalize_language_code(request.source_language)
     target_language = normalize_language_code(request.target_language)
-    if source_language == "auto":
-        source_language = guess_source_language(request.text)
+
+    source_candidates = candidate_source_languages(request.text, source_language, target_language)
     
     try:
-        if True:
+        translated = None
+        used_source_language = source_language if source_language != "auto" else "auto"
+
+        for candidate_source_language in source_candidates:
             try:
-                # Use the real translation API when available.
-                translated = await call_real_translation_api(
+                candidate_translation = await call_real_translation_api(
                     request.text,
-                    source_language,
+                    candidate_source_language,
                     target_language,
                     api_key,
                 )
+                if candidate_translation and candidate_translation.strip() != request.text.strip():
+                    translated = candidate_translation
+                    used_source_language = candidate_source_language
+                    break
             except Exception as api_error:
-                print(f"Translation service unavailable, falling back to mock translation: {api_error}")
-                translated = mock_translate(request.text, source_language, target_language)
-        else:
-            # Fallback to mock translation for demo purposes
-            translated = mock_translate(request.text, source_language, target_language)
+                print(
+                    f"Translation candidate failed for {candidate_source_language}->{target_language}: {api_error}"
+                )
+
+        if translated is None:
+            fallback_source = source_candidates[0] if source_candidates else source_language
+            print(f"Translation service unavailable, falling back to mock translation for {fallback_source}->{target_language}")
+            translated = mock_translate(request.text, fallback_source, target_language)
+            used_source_language = fallback_source
         
         # Return translated response
         return TranslationResponse(
             translated_text=translated,
-            source_language=source_language,
+            source_language=used_source_language,
             target_language=target_language
         )
     except Exception as e:
