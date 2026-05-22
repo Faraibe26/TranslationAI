@@ -246,7 +246,9 @@ def mock_translate(text: str, source_language: str, target_language: str) -> str
     if source_language in english_lookup and source_language != "en":
         english_text = english_lookup[source_language].get(text)
         if english_text and target_language in mock_translations:
-            return mock_translations[target_language].get(english_text, f"[{target_language.upper()}] {text}")
+            if target_language == "en":
+                return english_text
+            return mock_translations[target_language].get(english_text, text)
 
     if source_language == "auto":
         guessed_source = detect_supported_target(text)
@@ -258,11 +260,13 @@ def mock_translate(text: str, source_language: str, target_language: str) -> str
                 if target_language == "en":
                     return english_text
                 if target_language in mock_translations:
-                    return mock_translations[target_language].get(english_text, f"[{target_language.upper()}] {text}")
+                    return mock_translations[target_language].get(english_text, text)
 
     
     # Generic fallback for unknown phrases
-    return f"[{target_language.upper()}] {text}"
+    if target_language == "en":
+        return text
+    return text
 
 # ============ API Endpoints ============
 
