@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Startup script for Railway
-
+from main import app
 import os
 import sys
 import uvicorn

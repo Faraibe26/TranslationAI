@@ -5,6 +5,13 @@ import PresetPhrases from './components/PresetPhrases';
 import Disclaimer from './components/Disclaimer';
 import TranslationHistory from './components/TranslationHistory';
 
+const API_URL_CANDIDATES = [
+  import.meta.env.VITE_API_URL,
+  'https://pharmalingo-backend.onrender.com',
+  'https://translationai-production.up.railway.app',
+  'http://localhost:8000',
+].filter(Boolean);
+
 function App() {
   const [sourceText, setSourceText] = useState('');
   const [sourceLanguage, setSourceLanguage] = useState('auto');
@@ -38,38 +45,50 @@ function App() {
     setTranslatedText('');
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const response = await fetch(`${apiUrl}/api/translate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text: sourceText,
-          source_language: sourceLanguage,
-          target_language: targetLanguage,
-        }),
-      });
+      const requestPayload = {
+        text: sourceText,
+        source_language: sourceLanguage,
+        target_language: targetLanguage,
+      };
 
-      if (!response.ok) {
-        throw new Error('Translation failed');
+      let lastError = null;
+
+      for (const apiUrl of API_URL_CANDIDATES) {
+        try {
+          const response = await fetch(`${apiUrl}/api/translate`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestPayload),
+          });
+
+          if (!response.ok) {
+            lastError = new Error(`Translation failed with status ${response.status}`);
+            continue;
+          }
+
+          const data = await response.json();
+          setTranslatedText(data.translated_text);
+
+          const newEntry = {
+            id: Date.now(),
+            sourceText,
+            translatedText: data.translated_text,
+            sourceLanguage,
+            targetLanguage,
+            timestamp: new Date().toLocaleTimeString(),
+          };
+          const updatedHistory = [newEntry, ...history].slice(0, 10);
+          setHistory(updatedHistory);
+          localStorage.setItem('translationHistory', JSON.stringify(updatedHistory));
+          return;
+        } catch (fetchError) {
+          lastError = fetchError;
+        }
       }
 
-      const data = await response.json();
-      setTranslatedText(data.translated_text);
-      
-      // Add to translation history
-      const newEntry = {
-        id: Date.now(),
-        sourceText,
-        translatedText: data.translated_text,
-        sourceLanguage,
-        targetLanguage,
-        timestamp: new Date().toLocaleTimeString(),
-      };
-      const updatedHistory = [newEntry, ...history].slice(0, 10); // Keep last 10
-      setHistory(updatedHistory);
-      localStorage.setItem('translationHistory', JSON.stringify(updatedHistory));
+      throw lastError || new Error('Translation failed');
     } catch (err) {
       setError('Error translating text. Please try again.');
       console.error('Translation error:', err);

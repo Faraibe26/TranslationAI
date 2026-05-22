@@ -12,19 +12,24 @@ import httpx
 
 # Initialize FastAPI app
 app = FastAPI(title="PharmaLingo - Pharmacy Translation API", version="1.0.0")
+
+allowed_origins = [
+    origin.strip()
+    for origin in os.getenv(
+        "CORS_ORIGINS",
+        "http://localhost:5173,https://pharmalingo-backend.onrender.com,https://translationai-production.up.railway.app",
+    ).split(",")
+    if origin.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "https://translation-ai-self.vercel.app",
-    ],
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"^https://.*\.vercel\.app$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-@app.options("/{full_path:path}")
-async def options_handler(full_path: str):
-    return {"message": "OK"}
 
 
 
