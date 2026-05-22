@@ -6,6 +6,7 @@ import Disclaimer from './components/Disclaimer';
 import TranslationHistory from './components/TranslationHistory';
 
 const API_URL_CANDIDATES = [
+  '/api',
   import.meta.env.VITE_API_URL,
   'https://pharmalingo-backend.onrender.com',
   'https://translationai-production.up.railway.app',
