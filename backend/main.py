@@ -39,6 +39,7 @@ load_dotenv()
 class TranslationRequest(BaseModel):
     """Request model for translation endpoint"""
     text: str
+    source_language: str = "auto"
     target_language: str
 
 class TranslationResponse(BaseModel):
@@ -49,7 +50,53 @@ class TranslationResponse(BaseModel):
 
 # ============ Mock Translation Function ============
 
-def mock_translate(text: str, target_language: str) -> str:
+MYMEMORY_URL = os.getenv("MYMEMORY_URL", "https://api.mymemory.translated.net/get")
+
+
+def normalize_language_code(language_code: str) -> str:
+    """Normalize UI language codes to translation-service language codes."""
+    language_map = {
+        "zh-TW": "zh",
+        "zh": "zh",
+        "en": "en",
+        "es": "es",
+        "fr": "fr",
+        "de": "de",
+        "vi": "vi",
+        "ko": "ko",
+        "ar": "ar",
+        "pt": "pt",
+        "auto": "auto",
+    }
+    return language_map.get(language_code, language_code)
+
+
+def detect_supported_target(text: str) -> str:
+    """Fallback heuristic for demo phrases when the service is unavailable."""
+    lower_text = text.lower().strip()
+    if any(character.isdigit() for character in lower_text):
+        # Keep digits from steering detection.
+        lower_text = "".join(character for character in lower_text if not character.isdigit())
+    if any(character in lower_text for character in ["¿", "¡", "ñ", "á", "é", "í", "ó", "ú"]):
+        return "es"
+    if any(character in lower_text for character in ["à", "â", "ç", "é", "è", "ê", "ë", "î", "ï", "ô", "ù", "û", "ü"]):
+        return "fr"
+    if any(character in lower_text for character in ["ä", "ö", "ü", "ß"]):
+        return "de"
+    if any(character in lower_text for character in ["à", "è", "é", "ì", "í", "î", "ò", "ó", "ù"]):
+        return "pt"
+    if any("\u0600" <= character <= "\u06ff" for character in lower_text):
+        return "ar"
+    if any("\u4e00" <= character <= "\u9fff" for character in lower_text):
+        return "zh"
+    return "en"
+
+
+def guess_source_language(text: str) -> str:
+    """Guess the source language when the UI leaves it on auto-detect."""
+    return detect_supported_target(text)
+
+def mock_translate(text: str, source_language: str, target_language: str) -> str:
     """
     Mock translation function for demo purposes.
     Replace this with a real translation API when you have an API key.
@@ -128,9 +175,39 @@ def mock_translate(text: str, target_language: str) -> str:
         },
     }
     
-    # Check if we have a predefined translation
-    if target_language in mock_translations and text in mock_translations[target_language]:
-        return mock_translations[target_language][text]
+    english_lookup = {}
+    for language_code, translations in mock_translations.items():
+        for english_text, localized_text in translations.items():
+            english_lookup.setdefault(language_code, {})[localized_text] = english_text
+
+    if source_language == target_language:
+        return text
+
+    if source_language == "en" and target_language in mock_translations:
+        if text in mock_translations[target_language]:
+            return mock_translations[target_language][text]
+
+    if target_language == "en" and source_language in english_lookup:
+        if text in english_lookup[source_language]:
+            return english_lookup[source_language][text]
+
+    if source_language in english_lookup and source_language != "en":
+        english_text = english_lookup[source_language].get(text)
+        if english_text and target_language in mock_translations:
+            return mock_translations[target_language].get(english_text, f"[{target_language.upper()}] {text}")
+
+    if source_language == "auto":
+        guessed_source = detect_supported_target(text)
+        if guessed_source == target_language:
+            return text
+        if guessed_source != "en" and guessed_source in english_lookup:
+            english_text = english_lookup[guessed_source].get(text)
+            if english_text:
+                if target_language == "en":
+                    return english_text
+                if target_language in mock_translations:
+                    return mock_translations[target_language].get(english_text, f"[{target_language.upper()}] {text}")
+
     
     # Generic fallback for unknown phrases
     return f"[{target_language.upper()}] {text}"
@@ -164,24 +241,34 @@ async def translate(request: TranslationRequest):
     
     # Get API key from environment variables
     api_key = os.getenv("TRANSLATION_API_KEY")
+
+    source_language = normalize_language_code(request.source_language)
+    target_language = normalize_language_code(request.target_language)
+    if source_language == "auto":
+        source_language = guess_source_language(request.text)
     
     try:
-        if api_key:
-            # If API key exists, use real translation API
-            translated = await call_real_translation_api(
-                request.text, 
-                request.target_language, 
-                api_key
-            )
+        if True:
+            try:
+                # Use the real translation API when available.
+                translated = await call_real_translation_api(
+                    request.text,
+                    source_language,
+                    target_language,
+                    api_key,
+                )
+            except Exception as api_error:
+                print(f"Translation service unavailable, falling back to mock translation: {api_error}")
+                translated = mock_translate(request.text, source_language, target_language)
         else:
             # Fallback to mock translation for demo purposes
-            translated = mock_translate(request.text, request.target_language)
+            translated = mock_translate(request.text, source_language, target_language)
         
         # Return translated response
         return TranslationResponse(
             translated_text=translated,
-            source_language="en",
-            target_language=request.target_language
+            source_language=source_language,
+            target_language=target_language
         )
     except Exception as e:
         raise HTTPException(
@@ -191,6 +278,7 @@ async def translate(request: TranslationRequest):
 
 async def call_real_translation_api(
     text: str,
+    source_language: str,
     target_language: str,
     api_key: str
 ) -> str:
@@ -200,9 +288,25 @@ async def call_real_translation_api(
     
     Supported services: Google Translate, DeepL, Azure Translator, etc.
     """
-    # For now, return mock translation to avoid errors
-    # In production, implement your chosen translation API here
-    return mock_translate(text, target_language)
+    async with httpx.AsyncClient(timeout=20.0) as client:
+        langpair = f"{source_language}|{target_language}"
+        params = {
+            "q": text,
+            "langpair": langpair,
+        }
+
+        response = await client.get(MYMEMORY_URL, params=params)
+
+        if response.status_code >= 400:
+            raise HTTPException(status_code=502, detail=f"Translation service error: {response.text}")
+
+        data = response.json()
+        response_data = data.get("responseData", {})
+        translated_text = response_data.get("translatedText")
+        if not translated_text:
+            raise HTTPException(status_code=502, detail="Translation service returned no text")
+
+        return translated_text
 
 if __name__ == "__main__":
     import uvicorn

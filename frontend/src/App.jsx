@@ -7,7 +7,8 @@ import TranslationHistory from './components/TranslationHistory';
 
 function App() {
   const [sourceText, setSourceText] = useState('');
-  const [targetLanguage, setTargetLanguage] = useState('es');
+  const [sourceLanguage, setSourceLanguage] = useState('auto');
+  const [targetLanguage, setTargetLanguage] = useState('en');
   const [translatedText, setTranslatedText] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -45,6 +46,7 @@ function App() {
         },
         body: JSON.stringify({
           text: sourceText,
+          source_language: sourceLanguage,
           target_language: targetLanguage,
         }),
       });
@@ -61,6 +63,7 @@ function App() {
         id: Date.now(),
         sourceText,
         translatedText: data.translated_text,
+        sourceLanguage,
         targetLanguage,
         timestamp: new Date().toLocaleTimeString(),
       };
@@ -86,7 +89,8 @@ function App() {
     setSourceText('');
     setTranslatedText('');
     setError('');
-    setTargetLanguage('es');
+    setSourceLanguage('auto');
+    setTargetLanguage('en');
   };
 
   const handleToggleDarkMode = () => {
@@ -97,6 +101,7 @@ function App() {
 
   const handleHistoryClick = (entry) => {
     setSourceText(entry.sourceText);
+    setSourceLanguage(entry.sourceLanguage || 'en');
     setTargetLanguage(entry.targetLanguage);
     setTranslatedText(entry.translatedText);
   };
@@ -107,34 +112,41 @@ function App() {
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      darkMode 
-        ? 'bg-gray-900 text-white' 
-        : 'bg-gradient-to-br from-blue-50 to-indigo-100'
+    <div className={`app-shell min-h-screen relative overflow-hidden transition-colors duration-300 ${
+      darkMode
+        ? 'bg-slate-950 text-white'
+        : 'bg-slate-50 text-slate-900'
     } p-4 md:p-8`}>
-      <div className="max-w-6xl mx-auto">
-        {/* Header with Dark Mode Toggle */}
-        <div className="flex justify-between items-center mb-8">
-          <div className="text-center flex-1">
-            <h1 className={`text-4xl font-bold mb-2 ${
-              darkMode ? 'text-white' : 'text-gray-800'
+      <div className="ambient-orb ambient-orb-one" />
+      <div className="ambient-orb ambient-orb-two" />
+      <div className="ambient-grid" />
+
+      <div className="max-w-6xl mx-auto relative z-10">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-8">
+          <div className="max-w-2xl">
+            <h1 className={`text-4xl md:text-5xl font-black tracking-tight mb-3 ${
+              darkMode ? 'text-white' : 'text-slate-900'
             }`}>
-              💊 PharmaLingo
+              PharmaLingo
             </h1>
-            <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-              Translate pharmacy communication with ease
+            <p className={`text-base md:text-lg max-w-xl ${
+              darkMode ? 'text-slate-300' : 'text-slate-600'
+            }`}>
+              Translate pharmacy communication with a cleaner two-way workflow, faster actions, and speech output that feels more polished.
             </p>
           </div>
+
           <button
             onClick={handleToggleDarkMode}
-            className={`p-2 rounded-lg transition-colors ${
+            className={`inline-flex items-center gap-3 self-start md:self-auto px-4 py-3 rounded-2xl transition-all duration-200 shadow-lg ${
               darkMode
-                ? 'bg-gray-800 hover:bg-gray-700 text-yellow-400'
-                : 'bg-white hover:bg-gray-100 text-gray-700'
-            } shadow-md`}
+                ? 'bg-white/10 hover:bg-white/15 text-white border border-white/10'
+                : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-200'
+            }`}
             title="Toggle dark mode"
           >
-            {darkMode ? '☀️' : '🌙'}
+            <span className="text-lg">{darkMode ? '☀️' : '🌙'}</span>
+            <span className="text-sm font-semibold">{darkMode ? 'Light mode' : 'Dark mode'}</span>
           </button>
         </div>
 
@@ -155,6 +167,8 @@ function App() {
             <TranslationForm
               sourceText={sourceText}
               setSourceText={setSourceText}
+              sourceLanguage={sourceLanguage}
+              setSourceLanguage={setSourceLanguage}
               targetLanguage={targetLanguage}
               setTargetLanguage={setTargetLanguage}
               translatedText={translatedText}
@@ -168,7 +182,9 @@ function App() {
           </div>
         </div>
 
-        <Disclaimer darkMode={darkMode} />
+        <div className="mt-6">
+          <Disclaimer darkMode={darkMode} />
+        </div>
       </div>
     </div>
   );
