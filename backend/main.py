@@ -172,6 +172,33 @@ def candidate_source_languages(text: str, requested_source: str, target_language
 
     return candidates
 
+
+def is_valid_translation(source_text: str, translated_text: str) -> bool:
+    """Reject provider error messages and untranslated responses."""
+    if not translated_text:
+        return False
+
+    cleaned_translation = translated_text.strip()
+    cleaned_source = source_text.strip()
+
+    if cleaned_translation == cleaned_source:
+        return False
+
+    translated_upper = cleaned_translation.upper()
+    blocked_phrases = [
+        "PLEASE SELECT TWO DISTINCT LANGUAGES",
+        "INVALID SOURCE LANGUAGE",
+        "TRANSLATION SERVICE ERROR",
+        "TRANSLATION SERVICE RETURNED NO TEXT",
+    ]
+    if any(blocked_phrase in translated_upper for blocked_phrase in blocked_phrases):
+        return False
+
+    if cleaned_translation.startswith("[") and "]" in cleaned_translation[:8]:
+        return False
+
+    return True
+
 def mock_translate(text: str, source_language: str, target_language: str) -> str:
     """
     Mock translation function for demo purposes.
@@ -339,7 +366,7 @@ async def translate(request: TranslationRequest):
                     target_language,
                     api_key,
                 )
-                if candidate_translation and candidate_translation.strip() != request.text.strip():
+                if is_valid_translation(request.text, candidate_translation):
                     translated = candidate_translation
                     used_source_language = candidate_source_language
                     break
