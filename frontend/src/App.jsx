@@ -6,7 +6,7 @@ import Disclaimer from './components/Disclaimer';
 import TranslationHistory from './components/TranslationHistory';
 
 const API_URL_CANDIDATES = [
-  '/api',
+  '',
   import.meta.env.VITE_API_URL,
   'https://pharmalingo-backend.onrender.com',
   'https://translationai-production.up.railway.app',
@@ -56,7 +56,8 @@ function App() {
 
       for (const apiUrl of API_URL_CANDIDATES) {
         try {
-          const response = await fetch(`${apiUrl}/api/translate`, {
+          const endpoint = apiUrl ? `${apiUrl}/api/translate` : '/api/translate';
+          const response = await fetch(endpoint, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
