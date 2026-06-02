@@ -2,6 +2,9 @@ __pycache__
 *.pyc
 *.pyo
 *.egg-info
+.pytest_cache
+.mypy_cache
+.ruff_cache
 .git
 .gitignore
 venv
@@ -11,3 +14,4 @@ env
 node_modules
 dist
 build
+coverage

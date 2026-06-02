@@ -10,8 +10,6 @@ https://translation-nu-weld.vercel.app/
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Status](https://img.shields.io/badge/status-Active-brightgreen)
 
-A full-stack AI-powered translation tool designed for pharmacy staff to quickly translate common pharmacy communications into multiple languages with voice support and dark mode.
-
 ---
 
 ## ✨ Features
