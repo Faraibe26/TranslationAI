@@ -16,7 +16,7 @@ class Settings:
     debug: bool = os.getenv("DEBUG", "false").lower() == "true"
     cors_origins: str = os.getenv(
         "CORS_ORIGINS",
-        "http://localhost:5173,https://pharmalingo-backend.onrender.com,https://translationai-production.up.railway.app",
+        "http://localhost:5173,https://translation-nu-weld.vercel.app",
     )
     allow_origin_regex: str = os.getenv(
         "CORS_ALLOW_ORIGIN_REGEX",
