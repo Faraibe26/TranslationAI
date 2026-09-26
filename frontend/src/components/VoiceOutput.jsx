@@ -17,6 +17,11 @@ function VoiceOutput({ text, language = 'es', darkMode }) {
     zh: 'zh-CN',
     ar: 'ar-SA',
     pt: 'pt-BR',
+    yue: 'zh-HK',
+    ru: 'ru-RU',
+    pl: 'pl-PL',
+    el: 'el-GR',
+    sq: 'sq-AL',
   };
 
   const startSpeech = () => {

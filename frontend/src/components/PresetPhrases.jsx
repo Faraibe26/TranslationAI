@@ -15,6 +15,7 @@ function PresetPhrases({ onSelectPhrase, darkMode }) {
     "Do not take with alcohol",
     "Keep out of reach of children",
     "Take one tablet twice daily",
+    "Do you have insurance?",
   ];
 
   return (

@@ -27,6 +27,11 @@ def normalize_language_code(language_code: str) -> str:
         "ko": "ko",
         "ar": "ar",
         "pt": "pt",
+        "yue": "yue",
+        "ru": "ru",
+        "pl": "pl",
+        "el": "el",
+        "sq": "sq",
         "auto": "auto",
     }
     return language_map.get(language_code, language_code)
@@ -77,6 +82,10 @@ def detect_supported_target(text: str) -> str:
             "the", "and", "is", "are", "you", "your", "please", "take", "how", "many", "any",
             "with", "from", "this", "that", "do", "does", "have", "medication", "allergies",
         },
+        "ru": {"и", "не", "это", "у", "вас", "есть", "лекарство", "аллергия", "принимать"},
+        "pl": {"i", "nie", "czy", "ma", "pan", "pani", "lek", "alergia", "przyjmować"},
+        "el": {"και", "δεν", "έχετε", "φάρμακο", "αλλεργίες", "παίρνετε"},
+        "sq": {"dhe", "nuk", "keni", "ilaç", "alergji", "merrni"},
     }
 
     scores = {language_code: 0 for language_code in language_tokens}
@@ -111,7 +120,7 @@ def candidate_source_languages(text: str, requested_source: str, target_language
         if guessed_source != "auto":
             candidates.append(guessed_source)
 
-        for language_code in ["es", "fr", "de", "pt", "vi", "ko", "ar", "zh", "en"]:
+        for language_code in ["es", "fr", "de", "pt", "vi", "ko", "ar", "zh", "yue", "ru", "pl", "el", "sq", "en"]:
             if language_code not in candidates:
                 candidates.append(language_code)
 
@@ -218,6 +227,62 @@ MOCK_TRANSLATIONS = {
         "Do not take with alcohol": "請勿與酒精一起服用",
         "Keep out of reach of children": "請將其存放在兒童無法接觸的地方",
         "Take one tablet twice daily": "每天服用一片兩次",
+        "Do you have insurance?": "您有保險嗎?",
+    },
+    "yue": {
+        "Do you have any allergies?": "你有冇任何過敏症？",
+        "How many times a day do you take this medication?": "你每日食幾多次呢隻藥？",
+        "This medication may cause drowsiness": "呢隻藥可能會令人昏昏欲睡",
+        "Please confirm your date of birth": "請確認你嘅出生日期",
+        "Take this medication with food": "請與食物一齊服用呢隻藥",
+        "Do not take with alcohol": "唔好同酒精一齊服用",
+        "Keep out of reach of children": "請放喺兒童接觸唔到嘅地方",
+        "Take one tablet twice daily": "每日兩次，每次一粒",
+        "Do you have insurance?": "你有冇保險？",
+    },
+    "ru": {
+        "Do you have any allergies?": "У вас есть аллергия?",
+        "How many times a day do you take this medication?": "Сколько раз в день вы принимаете это лекарство?",
+        "This medication may cause drowsiness": "Это лекарство может вызвать сонливость",
+        "Please confirm your date of birth": "Пожалуйста, подтвердите дату рождения",
+        "Take this medication with food": "Принимайте это лекарство во время еды",
+        "Do not take with alcohol": "Не принимайте вместе с алкоголем",
+        "Keep out of reach of children": "Хранить в недоступном для детей месте",
+        "Take one tablet twice daily": "Принимайте по одной таблетке два раза в день",
+        "Do you have insurance?": "У вас есть страховка?",
+    },
+    "pl": {
+        "Do you have any allergies?": "Czy ma Pan/Pani jakieś alergie?",
+        "How many times a day do you take this medication?": "Ile razy dziennie przyjmuje Pan/Pani ten lek?",
+        "This medication may cause drowsiness": "Ten lek może powodować senność",
+        "Please confirm your date of birth": "Proszę potwierdzić datę urodzenia",
+        "Take this medication with food": "Ten lek należy przyjmować z jedzeniem",
+        "Do not take with alcohol": "Nie należy przyjmować z alkoholem",
+        "Keep out of reach of children": "Przechowywać w miejscu niedostępnym dla dzieci",
+        "Take one tablet twice daily": "Przyjmować jedną tabletkę dwa razy dziennie",
+        "Do you have insurance?": "Czy ma Pan/Pani ubezpieczenie?",
+    },
+    "el": {
+        "Do you have any allergies?": "Έχετε αλλεργίες;",
+        "How many times a day do you take this medication?": "Πόσες φορές την ημέρα παίρνετε αυτό το φάρμακο;",
+        "This medication may cause drowsiness": "Αυτό το φάρμακο μπορεί να προκαλέσει υπνηλία",
+        "Please confirm your date of birth": "Παρακαλώ επιβεβαιώστε την ημερομηνία γέννησής σας",
+        "Take this medication with food": "Πάρτε αυτό το φάρμακο μαζί με φαγητό",
+        "Do not take with alcohol": "Μην το παίρνετε μαζί με αλκοόλ",
+        "Keep out of reach of children": "Να φυλάσσεται μακριά από παιδιά",
+        "Take one tablet twice daily": "Πάρτε ένα δισκίο δύο φορές την ημέρα",
+        "Do you have insurance?": "Έχετε ασφάλιση;",
+    },
+    "sq": {
+        "Do you have any allergies?": "A keni ndonjë alergji?",
+        "How many times a day do you take this medication?": "Sa herë në ditë e merrni këtë ilaç?",
+        "This medication may cause drowsiness": "Ky ilaç mund të shkaktojë përgjumje",
+        "Please confirm your date of birth": "Ju lutemi konfirmoni datën e lindjes",
+        "Take this medication with food": "Merreni këtë ilaç me ushqim",
+        "Do not take with alcohol": "Mos e merrni me alkool",
+        "Keep out of reach of children": "Mbajeni larg fëmijëve",
+        "Take one tablet twice daily": "Merrni një tabletë dy herë në ditë",
+        "Do you have insurance?": "A keni sigurim?",
     },
 }
 

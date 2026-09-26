@@ -15,7 +15,7 @@ https://translation-nu-weld.vercel.app/
 ## ✨ Features
 
 ### �� Core Features
-- ✅ **9 Languages**: Spanish, French, German, Portuguese, Vietnamese, Korean, Chinese (Taiwan), Arabic
+- ✅ **15 Languages plus auto-detect**: English, Spanish, French, German, Chinese (Simplified), Chinese (Taiwan), Vietnamese, Korean, Arabic, Portuguese, Cantonese, Russian, Polish, Greek, Albanian
 - ✅ **Voice Input** 🎤: Speak and automatically transcribe text
 - ✅ **Voice Output** 🔊: Listen to translations aloud
 - ✅ **Dark Mode** 🌙: Easy on the eyes during long shifts
@@ -156,6 +156,11 @@ Translates text to target language.
 - `ko` - Korean
 - `zh-TW` - Chinese (Taiwan)
 - `ar` - Arabic
+- `yue` - Cantonese
+- `ru` - Russian
+- `pl` - Polish
+- `el` - Greek
+- `sq` - Albanian
 
 ---
 
@@ -248,7 +253,7 @@ git push heroku main
 
 ## 📋 Supported Pharmacy Phrases
 
-The app includes pre-translated pharmacy phrases in 9 languages:
+The app includes pre-translated pharmacy phrases for the supported language set:
 
 1. "Do you have any allergies?"
 2. "How many times a day do you take this medication?"
@@ -258,6 +263,7 @@ The app includes pre-translated pharmacy phrases in 9 languages:
 6. "Do not take with alcohol"
 7. "Keep out of reach of children"
 8. "Take one tablet twice daily"
+9. "Do you have insurance?"
 
 ---
 
@@ -344,7 +350,7 @@ For issues, questions, or suggestions:
 - ✅ Voice input/output
 - ✅ Dark mode
 - ✅ Translation history
-- ✅ 9 languages
+- ✅ 15 languages plus auto-detect
 
 ### v1.1 (Planned)
 - [ ] Real translation API integration

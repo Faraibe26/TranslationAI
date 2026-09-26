@@ -34,6 +34,11 @@ function TranslationForm({
     { code: 'ko', name: 'Korean' },
     { code: 'ar', name: 'Arabic' },
     { code: 'pt', name: 'Portuguese' },
+    { code: 'yue', name: 'Cantonese' },
+    { code: 'ru', name: 'Russian' },
+    { code: 'pl', name: 'Polish' },
+    { code: 'el', name: 'Greek' },
+    { code: 'sq', name: 'Albanian' },
   ];
 
   const sourceLanguageLabel = languages.find((lang) => lang.code === sourceLanguage)?.name || 'Auto-detect';
