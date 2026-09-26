@@ -4,19 +4,19 @@ WORKDIR /app
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PORT=8000
+    PORT=8080
 
-COPY requirements.txt ./
+COPY backend/requirements.txt ./requirements.txt
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app ./app
-COPY main.py ./
-COPY start.py ./
-COPY entrypoint.sh ./
+COPY backend/app ./app
+COPY backend/main.py ./
+COPY backend/start.py ./
+COPY backend/entrypoint.sh ./
 
 RUN chmod +x entrypoint.sh
 
-EXPOSE 8000
+EXPOSE 8080
 
 CMD ["./entrypoint.sh"]
