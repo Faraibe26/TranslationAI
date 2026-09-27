@@ -371,7 +371,7 @@ For issues, questions, or suggestions:
 
 ## 👨‍💻 Author
 
-**Created by**: Farai Bekhan  
+**Created by**: Faraibe khan  
 **Repository**: https://github.com/Faraibe26/TranslationAI
 
 ---
