@@ -168,6 +168,8 @@ MOCK_TRANSLATIONS = {
         "Keep out of reach of children": "Mantener fuera del alcance de los niños",
         "Take one tablet twice daily": "Tomar una tableta dos veces al día",
         "Do you have insurance?": "¿Tiene un seguro médico?",
+        "¿Tiene seguro?": "Do you have insurance?",
+        "¿Tiene seguro médico?": "Do you have insurance?",
     },
     "fr": {
         "Do you have any allergies?": "Avez-vous des allergies?",
