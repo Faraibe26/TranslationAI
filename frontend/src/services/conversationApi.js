@@ -1,4 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL || 'https://translationai-jckw.onrender.com';
+const API_URL = import.meta.env.DEV
+  ? (import.meta.env.VITE_API_URL || 'http://localhost:8000')
+  : 'https://translationai-jckw.onrender.com';
 const MYMEMORY_URL = 'https://api.mymemory.translated.net/get';
 
 async function request(path, options = {}) {
