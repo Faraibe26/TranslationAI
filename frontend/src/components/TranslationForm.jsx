@@ -56,6 +56,10 @@ function TranslationForm({
     setTargetLanguage(nextTarget);
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
     <div className="space-y-6">
       {/* Voice Input Section */}
@@ -228,9 +232,13 @@ function TranslationForm({
 
       {/* Translated Output Section */}
       {translatedText && (
-        <div className={`translation-result rounded-3xl p-6 md:p-7 border backdrop-blur-sm ${
+        <div className={`translation-result printable-instructions rounded-3xl p-6 md:p-7 border backdrop-blur-sm ${
           darkMode ? 'bg-slate-900/80 border-white/10 shadow-2xl shadow-black/20' : 'bg-white/85 border-slate-200 shadow-xl shadow-slate-200/60'
         }`}>
+          <div className="print-only mb-6">
+            <p className="text-2xl font-bold">PharmaLingo</p>
+            <p className="text-sm">Translated pharmacy instruction</p>
+          </div>
           <div className="flex items-center justify-between gap-3 mb-3">
             <div>
               <label className={`block text-sm font-semibold ${
@@ -249,21 +257,33 @@ function TranslationForm({
               Output ready
             </div>
           </div>
-          <div className={`p-5 rounded-2xl mb-4 min-h-24 leading-relaxed ${
+          <div className={`printable-text p-5 rounded-2xl mb-4 min-h-24 leading-relaxed ${
             darkMode
               ? 'bg-gradient-to-br from-cyan-500/10 via-sky-500/10 to-indigo-500/10 text-slate-100 border border-white/10'
               : 'bg-gradient-to-br from-cyan-50 via-sky-50 to-indigo-50 text-slate-800 border border-slate-100'
           }`}>
             <p className="text-[15px] md:text-base">{translatedText}</p>
           </div>
-          <div className="flex flex-col gap-3">
+          <div className="print-only mb-5 text-sm">
+            Target language: {targetLanguage.toUpperCase()}<br />
+            Printed: {new Date().toLocaleString()}
+          </div>
+          <div className="print-only border-t border-slate-300 pt-4 text-xs leading-relaxed">
+            Review this translation with qualified pharmacy staff before providing it to a patient.
+          </div>
+          <div className="no-print flex flex-col gap-3">
             <button
               onClick={onCopy}
               className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-4 rounded-2xl transition-all duration-200 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30"
             >
               📋 Copy to Clipboard
             </button>
-            {/* Voice Output Component */}
+            <button
+              onClick={handlePrint}
+              className="w-full inline-flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-800 text-white font-semibold py-2.5 px-4 rounded-2xl transition-all duration-200"
+            >
+              🖨️ Print Instructions
+            </button>
             <VoiceOutput text={translatedText} language={targetLanguage} darkMode={darkMode} />
           </div>
         </div>
