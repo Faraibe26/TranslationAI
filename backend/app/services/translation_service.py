@@ -293,6 +293,96 @@ MOCK_TRANSLATIONS = {
     },
 }
 
+STORAGE_PHRASE_TRANSLATIONS = {
+    "es": {
+        "Keep this medicine refrigerated.": "Mantenga este medicamento refrigerado.",
+        "Shake well before each use.": "Agite bien antes de cada uso.",
+        "Do not freeze this medicine.": "No congele este medicamento.",
+        "Store this medicine at room temperature.": "Guarde este medicamento a temperatura ambiente.",
+        "Keep the container tightly closed.": "Mantenga el recipiente bien cerrado.",
+    },
+    "fr": {
+        "Keep this medicine refrigerated.": "Conservez ce médicament au réfrigérateur.",
+        "Shake well before each use.": "Agitez bien avant chaque utilisation.",
+        "Do not freeze this medicine.": "Ne congelez pas ce médicament.",
+        "Store this medicine at room temperature.": "Conservez ce médicament à température ambiante.",
+        "Keep the container tightly closed.": "Gardez le récipient bien fermé.",
+    },
+    "de": {
+        "Keep this medicine refrigerated.": "Bewahren Sie dieses Medikament im Kühlschrank auf.",
+        "Shake well before each use.": "Vor jedem Gebrauch gut schütteln.",
+        "Do not freeze this medicine.": "Dieses Medikament nicht einfrieren.",
+        "Store this medicine at room temperature.": "Bewahren Sie dieses Medikament bei Raumtemperatur auf.",
+        "Keep the container tightly closed.": "Halten Sie den Behälter fest verschlossen.",
+    },
+    "pt": {
+        "Keep this medicine refrigerated.": "Mantenha este medicamento refrigerado.",
+        "Shake well before each use.": "Agite bem antes de cada uso.",
+        "Do not freeze this medicine.": "Não congele este medicamento.",
+        "Store this medicine at room temperature.": "Armazene este medicamento em temperatura ambiente.",
+        "Keep the container tightly closed.": "Mantenha o recipiente bem fechado.",
+    },
+    "vi": {
+        "Keep this medicine refrigerated.": "Bảo quản thuốc này trong tủ lạnh.",
+        "Shake well before each use.": "Lắc kỹ trước mỗi lần sử dụng.",
+        "Do not freeze this medicine.": "Không được đông lạnh thuốc này.",
+        "Store this medicine at room temperature.": "Bảo quản thuốc này ở nhiệt độ phòng.",
+        "Keep the container tightly closed.": "Đậy kín nắp hộp.",
+    },
+    "ko": {
+        "Keep this medicine refrigerated.": "이 약은 냉장 보관하세요.",
+        "Shake well before each use.": "사용하기 전에 잘 흔드세요.",
+        "Do not freeze this medicine.": "이 약을 얼리지 마세요.",
+        "Store this medicine at room temperature.": "이 약은 실온에 보관하세요.",
+        "Keep the container tightly closed.": "용기를 단단히 닫아 두세요.",
+    },
+    "zh-TW": {
+        "Keep this medicine refrigerated.": "請將此藥冷藏保存。",
+        "Shake well before each use.": "每次使用前請搖勻。",
+        "Do not freeze this medicine.": "請勿冷凍此藥。",
+        "Store this medicine at room temperature.": "請將此藥存放在室溫下。",
+        "Keep the container tightly closed.": "請將容器緊密關閉。",
+    },
+    "yue": {
+        "Keep this medicine refrigerated.": "請將呢隻藥冷藏保存。",
+        "Shake well before each use.": "每次使用前請搖勻。",
+        "Do not freeze this medicine.": "唔好冷凍呢隻藥。",
+        "Store this medicine at room temperature.": "請將呢隻藥放喺室溫保存。",
+        "Keep the container tightly closed.": "請將容器蓋緊。",
+    },
+    "ru": {
+        "Keep this medicine refrigerated.": "Храните это лекарство в холодильнике.",
+        "Shake well before each use.": "Хорошо встряхивайте перед каждым использованием.",
+        "Do not freeze this medicine.": "Не замораживайте это лекарство.",
+        "Store this medicine at room temperature.": "Храните это лекарство при комнатной температуре.",
+        "Keep the container tightly closed.": "Храните контейнер плотно закрытым.",
+    },
+    "pl": {
+        "Keep this medicine refrigerated.": "Ten lek należy przechowywać w lodówce.",
+        "Shake well before each use.": "Dobrze wstrząsnąć przed każdym użyciem.",
+        "Do not freeze this medicine.": "Nie zamrażać tego leku.",
+        "Store this medicine at room temperature.": "Przechowywać ten lek w temperaturze pokojowej.",
+        "Keep the container tightly closed.": "Przechowywać pojemnik szczelnie zamknięty.",
+    },
+    "el": {
+        "Keep this medicine refrigerated.": "Φυλάσσετε αυτό το φάρμακο στο ψυγείο.",
+        "Shake well before each use.": "Ανακινήστε καλά πριν από κάθε χρήση.",
+        "Do not freeze this medicine.": "Μην καταψύχετε αυτό το φάρμακο.",
+        "Store this medicine at room temperature.": "Φυλάσσετε αυτό το φάρμακο σε θερμοκρασία δωματίου.",
+        "Keep the container tightly closed.": "Διατηρείτε το δοχείο ερμητικά κλειστό.",
+    },
+    "sq": {
+        "Keep this medicine refrigerated.": "Mbajeni këtë ilaç në frigorifer.",
+        "Shake well before each use.": "Tundeni mirë para çdo përdorimi.",
+        "Do not freeze this medicine.": "Mos e ngrini këtë ilaç.",
+        "Store this medicine at room temperature.": "Mbajeni këtë ilaç në temperaturën e dhomës.",
+        "Keep the container tightly closed.": "Mbajeni enën të mbyllur mirë.",
+    },
+}
+
+for language_code, translations in STORAGE_PHRASE_TRANSLATIONS.items():
+    MOCK_TRANSLATIONS.setdefault(language_code, {}).update(translations)
+
 
 def mock_translate(text: str, source_language: str, target_language: str) -> str:
     english_lookup: dict[str, dict[str, str]] = {}

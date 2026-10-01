@@ -13,10 +13,15 @@ function PresetPhrases({ onSelectPhrase, darkMode }) {
     { text: 'How many times a day do you take this medication?', category: 'Medication' },
     { text: 'Take this medication with food', category: 'Medication' },
     { text: 'Take one tablet twice daily', category: 'Medication' },
+    { text: 'Keep this medicine refrigerated.', category: 'Storage & preparation' },
+    { text: 'Shake well before each use.', category: 'Storage & preparation' },
+    { text: 'Do not freeze this medicine.', category: 'Storage & preparation' },
+    { text: 'Store this medicine at room temperature.', category: 'Storage & preparation' },
+    { text: 'Keep the container tightly closed.', category: 'Storage & preparation' },
     { text: 'Please confirm your date of birth', category: 'Patient & billing' },
     { text: 'Do you have insurance?', category: 'Patient & billing' },
   ];
-  const categories = ['All', 'Favorites', 'Safety', 'Medication', 'Patient & billing'];
+  const categories = ['All', 'Favorites', 'Safety', 'Medication', 'Storage & preparation', 'Patient & billing'];
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [favorites, setFavorites] = useState(() => {
