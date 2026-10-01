@@ -14,6 +14,8 @@ import httpx
 
 from ..core.config import Settings
 
+MYMEMORY_FALLBACK_URL = "https://api.mymemory.translated.net/get"
+
 
 def normalize_language_code(language_code: str) -> str:
     language_map = {
@@ -433,6 +435,7 @@ async def call_real_translation_api(
     target_language: str,
     client: httpx.AsyncClient,
     settings: Settings,
+    translation_api_url: str | None = None,
 ) -> str:
     langpair = f"{source_language}|{target_language}"
     params = {
@@ -442,7 +445,7 @@ async def call_real_translation_api(
     if settings.translation_api_key:
         params["key"] = settings.translation_api_key
 
-    response = await client.get(settings.translation_api_url, params=params)
+    response = await client.get(translation_api_url or settings.translation_api_url, params=params)
 
     if response.status_code >= 400:
         raise RuntimeError(f"Translation service error: {response.text}")
@@ -491,6 +494,22 @@ async def translate_text(
                     break
             except Exception:
                 continue
+
+        if translated_text is None and settings.translation_api_url != MYMEMORY_FALLBACK_URL:
+            try:
+                fallback_translation = await call_real_translation_api(
+                    text,
+                    normalized_source,
+                    normalized_target,
+                    client,
+                    settings,
+                    MYMEMORY_FALLBACK_URL,
+                )
+                if is_valid_translation(text, fallback_translation):
+                    translated_text = fallback_translation
+                    used_source_language = normalized_source
+            except Exception:
+                pass
 
     if translated_text is None:
         fallback_source = source_candidates[0] if source_candidates else normalized_source
