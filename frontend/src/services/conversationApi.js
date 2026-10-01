@@ -27,28 +27,33 @@ export const joinConversation = (token) => request(`/api/conversations/${token}/
   method: 'POST',
 });
 
-export const getConversationMessages = (token) => request(`/api/conversations/${token}/messages`);
-
-export const sendConversationMessage = (token, sender, text) => request(`/api/conversations/${token}/messages`, {
-  method: 'POST',
-  body: JSON.stringify({ sender, text }),
-}).then(async (message) => {
-  if (message.translated_text?.trim() !== text.trim()
+async function translateMessageIfNeeded(message) {
+  if (message.translated_text?.trim() !== message.original_text?.trim()
     || message.source_language === message.target_language) {
     return message;
   }
 
   const response = await fetch(
-    `${MYMEMORY_URL}?q=${encodeURIComponent(text)}&langpair=${encodeURIComponent(`${message.source_language}|${message.target_language}`)}`
+    `${MYMEMORY_URL}?q=${encodeURIComponent(message.original_text)}&langpair=${encodeURIComponent(`${message.source_language}|${message.target_language}`)}`
   );
   if (!response.ok) return message;
 
   const data = await response.json();
   const translatedText = data?.responseData?.translatedText?.trim();
-  return translatedText && translatedText !== text.trim()
+  return translatedText && translatedText !== message.original_text.trim()
     ? { ...message, translated_text: translatedText }
     : message;
-});
+}
+
+export const getConversationMessages = async (token) => {
+  const response = await request(`/api/conversations/${token}/messages`);
+  return { messages: await Promise.all(response.messages.map(translateMessageIfNeeded)) };
+};
+
+export const sendConversationMessage = (token, sender, text) => request(`/api/conversations/${token}/messages`, {
+  method: 'POST',
+  body: JSON.stringify({ sender, text }),
+}).then(translateMessageIfNeeded);
 
 export const endConversation = (token) => request(`/api/conversations/${token}`, {
   method: 'DELETE',
