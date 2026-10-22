@@ -20,3 +20,6 @@ Create a GitHub repository and upload these files. On a static hosting provider 
 Step 3: The homepage now includes an interactive, sample-data-only guided preview with three pharmacy phrases and Spanish/French selections. It is not connected to the live app or an external translation service. Do not use these example translations for clinical decisions.
 
 Step 4: Removed translate button, straightened the hero preview card, and added Arabic and Russian. Changing either dropdown immediately updates the preset example.
+
+
+Update: The main hero CTA now scrolls to and briefly highlights the interactive translation preview. The preview remains sample-data-only and updates on selection.

@@ -22,3 +22,18 @@ function updateSample() {
 
 phraseSelect.addEventListener("change", updateSample);
 languageSelect.addEventListener("change", updateSample);
+
+// Draw attention to the interactive preview when visitors choose the hero CTA.
+const demoJump = document.querySelector('.demo-jump');
+const demoCard = document.getElementById('try-demo');
+if (demoJump && demoCard) {
+  demoJump.addEventListener('click', (event) => {
+    event.preventDefault();
+    demoCard.scrollIntoView({behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'center'});
+    demoCard.classList.remove('demo-highlight');
+    void demoCard.offsetWidth;
+    demoCard.classList.add('demo-highlight');
+    demoCard.focus({preventScroll:true});
+    window.setTimeout(() => demoCard.classList.remove('demo-highlight'), 2600);
+  });
+}

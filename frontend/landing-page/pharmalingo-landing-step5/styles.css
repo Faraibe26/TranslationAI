@@ -21,3 +21,9 @@
 /* Step 4: straight demo card and automatic translation */
 .app-card{transform:none;}
 #demo-output[dir="rtl"]{text-align:right;}
+
+/* Guide visitors to the working sample preview */
+#try-demo {scroll-margin-top:105px;transition:box-shadow .25s ease,outline-color .25s ease;}
+#try-demo.demo-highlight {outline:3px solid #0b91b0;outline-offset:5px;box-shadow:0 0 0 12px rgba(11,145,176,.14),0 22px 60px rgba(11,145,176,.2);}
+#try-demo .demo-notice {line-height:1.5;}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto!important;}#try-demo{transition:none;}}
