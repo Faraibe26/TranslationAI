@@ -230,6 +230,13 @@ function TranslationForm({
         </button>
       </div>
 
+      <p className={`text-xs leading-relaxed ${
+        darkMode ? 'text-slate-400' : 'text-slate-500'
+      }`}>
+        Privacy notice: the text you translate may be sent to PharmaLingo&apos;s servers and
+        an external translation provider. Do not enter information you are not permitted to share.
+      </p>
+
       {/* Translated Output Section */}
       {translatedText && (
         <div className={`translation-result printable-instructions rounded-3xl p-6 md:p-7 border backdrop-blur-sm ${
