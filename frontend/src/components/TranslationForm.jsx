@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import VoiceInput from './VoiceInput';
 import VoiceOutput from './VoiceOutput';
 
@@ -21,6 +21,8 @@ function TranslationForm({
   onClear,
   darkMode,
 }) {
+  const [actionStatus, setActionStatus] = useState('');
+
   // Available languages for translation
   const languages = [
     { code: 'auto', name: 'Auto-detect' },
@@ -58,6 +60,40 @@ function TranslationForm({
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const getPatientSafeText = () => (
+    `${translatedText}\n\nReview this translation with qualified pharmacy staff before providing it to a patient.`
+  );
+
+  const handleCopyPatientSafe = async () => {
+    try {
+      await navigator.clipboard.writeText(getPatientSafeText());
+      setActionStatus('Patient-safe text copied');
+    } catch {
+      setActionStatus('Unable to copy text');
+    }
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: 'PharmaLingo translated instruction',
+      text: getPatientSafeText(),
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        setActionStatus('Translation shared');
+      } else {
+        await navigator.clipboard.writeText(getPatientSafeText());
+        setActionStatus('Sharing is unavailable, so patient-safe text was copied');
+      }
+    } catch (error) {
+      if (error?.name !== 'AbortError') {
+        setActionStatus('Unable to share text');
+      }
+    }
   };
 
   return (
@@ -286,11 +322,38 @@ function TranslationForm({
               📋 Copy to Clipboard
             </button>
             <button
+              onClick={handleCopyPatientSafe}
+              className={`w-full inline-flex items-center justify-center gap-2 font-semibold py-2.5 px-4 rounded-2xl transition-all duration-200 ${
+                darkMode
+                  ? 'bg-cyan-500/15 text-cyan-100 hover:bg-cyan-500/25 border border-cyan-300/20'
+                  : 'bg-cyan-50 text-cyan-800 hover:bg-cyan-100 border border-cyan-100'
+              }`}
+            >
+              🛡️ Copy Patient-Safe Version
+            </button>
+            <button
+              onClick={handleShare}
+              className={`w-full inline-flex items-center justify-center gap-2 font-semibold py-2.5 px-4 rounded-2xl transition-all duration-200 ${
+                darkMode
+                  ? 'bg-indigo-500/15 text-indigo-100 hover:bg-indigo-500/25 border border-indigo-300/20'
+                  : 'bg-indigo-50 text-indigo-800 hover:bg-indigo-100 border border-indigo-100'
+              }`}
+            >
+              ↗️ Share Translation
+            </button>
+            <button
               onClick={handlePrint}
               className="w-full inline-flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-800 text-white font-semibold py-2.5 px-4 rounded-2xl transition-all duration-200"
             >
-              🖨️ Print Instructions
+              🖨️ Print / Save PDF / Choose Printer
             </button>
+            {actionStatus && (
+              <p className={`text-center text-xs font-semibold ${
+                darkMode ? 'text-slate-300' : 'text-slate-600'
+              }`} role="status">
+                {actionStatus}
+              </p>
+            )}
             <VoiceOutput text={translatedText} language={targetLanguage} darkMode={darkMode} />
           </div>
         </div>
